@@ -16,15 +16,17 @@ while cap.isOpened():
         break
     counter += 1#计算帧数
     if (time.time() - start_time) != 0:#实时显示帧数
-        cv2.putText(frame, "FPS {0}".format(float('%.1f' % (counter / (time.time() - start_time)))), (500, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255),
-                    3)
+        # cv2.putText(frame, "FPS {0}".format(float('%.1f' % (counter / (time.time() - start_time)))), (500, 50),
+        #             cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255),
+        #             3)
         # 图像处理部分--------------------------------------------
 
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        xgrad = cv2.Sobel(frame, cv2.CV_16SC1, 1, 0)  # xGrodient
-        ygrad = cv2.Sobel(frame, cv2.CV_16SC1, 0, 1)  # yGrodient
-        frame = cv2.Canny(xgrad, ygrad, 100, 150)  # edge 
+
+        # xgrad = cv2.Sobel(frame, cv2.CV_16SC1, 1, 0)  # xGrodient
+        # ygrad = cv2.Sobel(frame, cv2.CV_16SC1, 0, 1)  # yGrodient
+        # frame = cv2.Canny(xgrad, ygrad, 100, 150)  # edge 
+
         # ret, frame = cv2.threshold(frame, 80, 255, cv2.THRESH_BINARY)
 
         # ------------------------------------------------------
