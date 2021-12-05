@@ -70,7 +70,32 @@ def do_mosaic(frame, x, y, w, h, neighbor=9):
             cv2.rectangle(frame, left_up, right_down, color, -1)
 
 
-cap = cv2.VideoCapture("../resources/eye/eye_closed_01.avi")
+def segment(img, low, high):
+    # fh, fw = img.shape[0], img.shape[1]
+    # for i in range(fh):
+    #     for j in range(fw):
+    #         if low <= img[i, j] <= high:
+    #             img[i, j] = 255
+    #         else:
+    #             img[i, j] = 0
+    img[img>high] = 0
+    img[img<low] = 0
+    return img
+
+def FillHole(img):
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    len_contour = len(contours)
+    contour_list = []
+    for i in range(len_contour):
+        drawing = np.zeros_like(img, np.uint8)  # create a black image
+        img_contour = cv2.drawContours(drawing, contours, i, (255, 255, 255), -1)
+        contour_list.append(img_contour)
+ 
+    out = sum(contour_list)
+    return out
+
+
+cap = cv2.VideoCapture("../resources/eye/eye_closed_02.avi")
 start_time = time.time()
 counter = 0 
 fps = cap.get(cv2.CAP_PROP_FPS) #视频平均帧率
@@ -111,14 +136,14 @@ while cap.isOpened():
         # k = 1.1
         # size = (5, 5)
         # DoG_edge = DoG(frame, size, sigma, k)
-        # DoG_edge[DoG_edge>255] = 255
+        # DoG_edge[DoG_edge>0] = 255
         # DoG_edge[DoG_edge<0] = 0
-        # DoG_edge = DoG_edge / np.max(DoG_edge)
-        # DoG_edge = DoG_edge * 255
-        # out_img = DoG_edge.astype(np.uint8)
+        # # DoG_edge = DoG_edge / np.max(DoG_edge)
+        # # DoG_edge = DoG_edge * 255
+        # out_image = DoG_edge.astype(np.uint8)
 
-        # LoG_edge = LoG(frame, 0.4, (7, 7))
-        # LoG_edge[LoG_edge>255] = 255
+        # LoG_edge = LoG(frame, 0.4, (5, 5))
+        # LoG_edge[LoG_edge>0] = 255
         # # LoG_edge[LoG_edge>255] = 0
         # LoG_edge[LoG_edge<0] = 0
         # out_image = LoG_edge.astype(np.uint8)
@@ -128,20 +153,29 @@ while cap.isOpened():
         
         # frame = cv2.blur(frame, (1, 1))
 
-        # frame = cv2.medianBlur(frame, 3)
-        # out_image = cv2.Canny(frame,30, 100)
+        # frame = cv2.medianBlur(frame, 13)
+        # calhe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(8,8))
+        # frame = calhe.apply(frame)
+        frame = segment(frame, 56, 106)
+        # edge = cv2.Canny(frame,53, 93)
+        
+        # kernel = np.ones((5,5),np.uint8)   
+        # edge = cv2.dilate(edge, kernel, iterations = 1)
+        # edge = cv2.morphologyEx(edge,cv2.MORPH_CLOSE,kernel=(3,3),iterations=3)
 
-        out_image = frame.copy()
-        do_mosaic(out_image, 0, 0, 900, 700, 16)
-
-        # ------------------------------------------------------
-        cv2.imshow('frame', out_image)
+        # out_image = frame.copy()
+        # do_mosaic(out_image, 0, 0, 900, 700, 10)
+        # out_image = cv2.Canny(out_image,30, 100)
+        # edge = FillHole(edge)
+        # ------------------------------------------------------ 
+        cv2.imshow('frame', frame)
+        # cv2.imshow('frame', edge)
 
         # print("FPS: ", counter / (time.time() - start_time))
 
         counter = 0
         start_time = time.time()
-    time.sleep(1 / fps)#按原帧率播放
+    time.sleep(1/fps)#按原帧率播放
 
 cap.release()
 cv2.destropAllWindows()
