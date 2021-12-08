@@ -74,6 +74,7 @@ def segment(img, low, high):
     img1 = img.copy()
     img1[img1>high] = 0
     img1[img1<low] = 0
+    img1[img1>low] = 255
     return img1
 
 def nothing(x):
@@ -102,8 +103,7 @@ frame = cv2.imread("../resources/figure/1.png",0)
 
 # calhe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(3,3))
 # frame = calhe.apply(frame)
-frame = cv2.medianBlur(frame, 3)
-
+frame = frame[200:520, 0:640]
 maxVal=200
 minVal=100
 
@@ -119,7 +119,6 @@ while (1):
     # edge = cv2.dilate(edge, kernel, iterations = 1)
     # edge = cv2.morphologyEx(edge,cv2.MORPH_CLOSE,kernel=(3,3),iterations=3)
     # edge = FillHole(edge)
-    
     # cv2.imshow('res',frame)
     # cv2.imshow('res',edge)
     cv2.imshow('res', result)

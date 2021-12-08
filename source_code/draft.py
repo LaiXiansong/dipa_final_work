@@ -71,16 +71,17 @@ def do_mosaic(frame, x, y, w, h, neighbor=9):
 
 
 def segment(img, low, high):
-    # fh, fw = img.shape[0], img.shape[1]
-    # for i in range(fh):
-    #     for j in range(fw):
-    #         if low <= img[i, j] <= high:
-    #             img[i, j] = 255
-    #         else:
-    #             img[i, j] = 0
-    img[img>high] = 0
-    img[img<low] = 0
-    return img
+    img1 = img.copy()
+    img1[img1>high] = 0
+    img1[img1<low] = 0
+    img1[img1>low] = 1
+    return img1
+
+def segment1(img, low, high):
+    img1 = img.copy()
+    img1[img1>high] = 0
+    img1[img1<low] = 0
+    return img1
 
 def FillHole(img):
     contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -95,7 +96,7 @@ def FillHole(img):
     return out
 
 
-cap = cv2.VideoCapture("../resources/eye/eye_closed_02.avi")
+cap = cv2.VideoCapture("../resources/calling/Phoning_09.avi")
 start_time = time.time()
 counter = 0 
 fps = cap.get(cv2.CAP_PROP_FPS) #视频平均帧率
@@ -104,7 +105,7 @@ ret, last_frame = cap.read()
 last_frame = cv2.cvtColor(last_frame,cv2.COLOR_BGR2GRAY)
 
 while cap.isOpened():
-    ret, frame = cap.read() # ret 返回是否读到图片
+    ret, Mask = cap.read() # ret 返回是否读到图片
     #键盘输入空格暂停，输入q退出
     key = cv2.waitKey(1) & 0xff
     if key == ord(" "):
@@ -118,15 +119,14 @@ while cap.isOpened():
         #             3)
         # 图像处理部分--------------------------------------------
 
-        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-
-
+        gray = cv2.cvtColor(Mask, cv2.COLOR_BGR2GRAY)
+        # gray = gray[200:520, 0:640]
+        frame = gray.copy()
+        # frame = cv2.blur(frame, (7, 7))
+        # frame = cv2.medianBlur(frame, 3)
         # xgrad = cv2.Sobel(frame, cv2.CV_16SC1, 1, 0)  # xGrodient
         # ygrad = cv2.Sobel(frame, cv2.CV_16SC1, 0, 1)  # yGrodient
         # frame = cv2.Canny(xgrad, ygrad, 100, 150)  # edge 
-        # frame = cv2.Canny(frame,30, 100)
-
-        # ret, frame = cv2.threshold(frame, 80, 255, cv2.THRESH_BINARY)
 
         # image_gray_blur1 = cv2.GaussianBlur(frame, (3, 3), 0.7)
         # image_gray_blur2 = cv2.GaussianBlur(frame, (3, 3), 0.8)
@@ -156,18 +156,91 @@ while cap.isOpened():
         # frame = cv2.medianBlur(frame, 13)
         # calhe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(8,8))
         # frame = calhe.apply(frame)
-        frame = segment(frame, 56, 106)
+        # frame = segment(frame, 0, 100)
         # edge = cv2.Canny(frame,53, 93)
         
-        # kernel = np.ones((5,5),np.uint8)   
-        # edge = cv2.dilate(edge, kernel, iterations = 1)
-        # edge = cv2.morphologyEx(edge,cv2.MORPH_CLOSE,kernel=(3,3),iterations=3)
+        # kernel = np.ones((2, 2),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_OPEN,kernel,iterations=1)
 
         # out_image = frame.copy()
         # do_mosaic(out_image, 0, 0, 900, 700, 10)
         # out_image = cv2.Canny(out_image,30, 100)
         # edge = FillHole(edge)
+
+        # frame = cv2.medianBlur(frame, 5)
+        # frame = segment1(frame, 40, 140)
+
+        # kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
+        # frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+        
+        # frame = segment (frame, 60, 255)
+
+        # frame = cv2.medianBlur(frame, 7)
+
+
+        # kernel = np.ones((3, 3),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel,iterations=2)
+
+        # kernel = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]], np.uint8)  
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel,iterations=3)
+
+        # kernel = np.ones((3, 3),np.uint8)  
+        # Mask = cv2.morphologyEx(Mask,cv2.MORPH_OPEN,kernel,iterations=1)
+        # --------------------------------------------------------------
+        # kernel = np.array([[-1, -1, -1], [2, 2, 2], [-1, -1, -1]], np.float32)
+        # frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+
+        # kernel = np.ones((3, 3),np.uint8)   
+        # frame = cv2.erode(frame, kernel, iterations = 1)
+
+        # kernel = np.ones((5, 5),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel,iterations=1)
+
+        # kernel = np.ones((3, 3),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_OPEN,kernel,iterations=1)
+
+        # kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
+        # frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+        
+        # kernel = np.ones((5, 5),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel,iterations=3)
+        # -----------------------------------------------------------------------
+        # kernel = np.array((
+        #         [1, 1, 1, 1]), dtype="int")
+        # # kernel = np.array(( 
+        # #         [1, 1, 1, 1, 1, 1, 1, 1],
+        # #         [0, 0, 1, 1, 1, 1, 0, 0]), dtype="int")
+        # frame = cv2.morphologyEx(frame, cv2.MORPH_HITMISS, kernel)
+
+        # result2 = Mask * gray
+        # result2 = segment1(result2, 145, 150)
         # ------------------------------------------------------ 
+        # 找到眼眶的范围
+        # 大范围中值滤波+阈值分割将人从背景中分割出来
+        # gray = 源图；frame = 源图的一份复制
+        # roi 区域
+        # 局部直方图增强
+        # calhe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(9, 9))
+        # frame = calhe.apply(frame)
+        # 中值滤波
+        frame = cv2.medianBlur(frame, 9)
+        # 水平边缘
+        kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
+        # kernel = 5 * np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], np.float32)
+        frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+        # 二值阈值分割
+        frame = segment(frame, 60, 255) * 255
+        # # 膨胀
+        # kernel = np.ones((3, 3),np.uint8)
+        # # kernel = np.array([[0, 0, 0], [0, 1, 0], [0, 1, 0]], np.uint8)  
+        # frame = cv2.dilate(frame, kernel, iterations = 10)
+        # # 闭操作
+        # kernel = np.ones((5, 5),np.uint8)   
+        # frame = cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel,iterations=3)
+        # frame = segment(frame, 0, 255)
+        # Mask = frame
+        # result = gray * Mask
+
         cv2.imshow('frame', frame)
         # cv2.imshow('frame', edge)
 

@@ -74,6 +74,7 @@ def segment(img, low, high):
     img1 = img.copy()
     img1[img1>high] = 0
     img1[img1<low] = 0
+    img1[img1<high] = 255
     return img1
 
 def nothing(x):
@@ -111,9 +112,11 @@ frame = cv2.imread("../resources/figure/2.png",0)
 # cv2.imshow('res',edge)
 
 
-kernel = np.array([[1, 1, 1], [0, 0, 0], [-1, -1, -1]], np.float32)
-result = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+# kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
+# result = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+# frame = cv2.equalizeHist(frame)
+clahe = cv2.createCLAHE(clipLimit=3, tileGridSize=(7, 7))
+frame = clahe.apply(frame)
 
-
-cv2.imshow('res', result)
+cv2.imshow('res', frame)
 cv2.waitKey(0)
