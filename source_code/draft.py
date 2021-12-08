@@ -96,7 +96,7 @@ def FillHole(img):
     return out
 
 
-cap = cv2.VideoCapture("../resources/calling/Phoning_09.avi")
+cap = cv2.VideoCapture("../resources/calling/Phoning_10.avi")
 start_time = time.time()
 counter = 0 
 fps = cap.get(cv2.CAP_PROP_FPS) #视频平均帧率
@@ -222,14 +222,15 @@ while cap.isOpened():
         # 局部直方图增强
         # calhe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(9, 9))
         # frame = calhe.apply(frame)
+        # -----------------------------------
         # 中值滤波
-        frame = cv2.medianBlur(frame, 9)
-        # 水平边缘
-        kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
-        # kernel = 5 * np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], np.float32)
-        frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
-        # 二值阈值分割
-        frame = segment(frame, 60, 255) * 255
+        # frame = cv2.medianBlur(frame, 9)
+        # # 水平边缘
+        # kernel = np.array([[5, 5, 5], [0, 0, 0], [-5, -5, -5]], np.float32)
+        # # kernel = 5 * np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], np.float32)
+        # frame = cv2.filter2D(frame, -1, kernel, anchor=(0, 0), borderType=cv2.BORDER_CONSTANT)
+        # # 二值阈值分割
+        # frame = segment(frame, 60, 255) * 255
         # # 膨胀
         # kernel = np.ones((3, 3),np.uint8)
         # # kernel = np.array([[0, 0, 0], [0, 1, 0], [0, 1, 0]], np.uint8)  
@@ -240,8 +241,10 @@ while cap.isOpened():
         # frame = segment(frame, 0, 255)
         # Mask = frame
         # result = gray * Mask
+        #------------------------------------
+        ret, gray = cv2.threshold(gray, 0 , 255, cv2.THRESH_OTSU)
 
-        cv2.imshow('frame', frame)
+        cv2.imshow('frame', gray)
         # cv2.imshow('frame', edge)
 
         # print("FPS: ", counter / (time.time() - start_time))
